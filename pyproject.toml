@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "module4-project2"
+version = "0.1.0"
+description = "description"
+authors = ["Anna Penkina <annapenkina200121@mail.ru>"]
+license = "license"
+readme = "README.md"
+packages = [{include = "module4_project2"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

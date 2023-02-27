@@ -20,19 +20,13 @@ class Youtube:
         self.video_count = self.channel_info['items'][0]['statistics']['videoCount']
         self.view_count = self.channel_info['items'][0]['statistics']['viewCount']
         data = self.title + self.description + self.url + self.subscriber_count + self.video_count + self.view_count
-    @classmethod
-    def get_service(cls):
-        service = build('youtube', 'v3', developerKey=os.environ.get('YOUTUBE_KEY'))
-        return service
 
     def json_file(self, data, filename='channel.json'):
         """добавляет инфу о канале,хранящуюся в атрибутах, в json file"""
         with open(filename, 'r') as file:
             file_data = json.load(file)
             file_data.append(data)
-            return json.dump(file_data, file, indent=4)
-
-
+            return json.dump(file_data, file, indent=4, ensure_ascii=False)
 
     def print_info(self):
         print(json.dumps(self.channel_info, indent=2, ensure_ascii=False))

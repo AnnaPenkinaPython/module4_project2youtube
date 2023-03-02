@@ -31,5 +31,18 @@ class Youtube:
     def print_info(self):
         print(json.dumps(self.channel_info, indent=2, ensure_ascii=False))
 
+    def __repr__(self):
+        return f'Youribe-channel: {self.title}'
+
+    def __add__(self, other):
+        return self.subscriber_count + other.subscriber_count
+
+    def __len__(self, other):
+        if self.subscriber_count > other.subscriber_count:
+            return True
+        else:
+            return False
+
 
 y = Youtube("UCMCgOm8GZkHp8zJ6l7_hIuA")
+

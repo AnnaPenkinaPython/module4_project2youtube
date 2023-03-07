@@ -40,11 +40,23 @@ class Youtube:
     def __lt__(self, other):
         return self.subscriber_count > other.subscriber_count
 
-    
+
+class Video(Youtube):
+    def __init__(self, channel_id, video_name, view_count, like_count):  # переопределяем метод базового класса
+        super().__init__(channel_id)
+        self.video_name = video_name
+        self.view_count = view_count
+        self.like_count = like_count
 
 
-y = Youtube("UCMCgOm8GZkHp8zJ6l7_hIuA")
-t = Youtube("UCByhZ-JEe5OOZSuq0uaXOng")  # таня
+class PLVideo(Video):
+    def __init__(self, channel_id, video_name, view_count, like_count, video_id,
+                 playlist_id, playlist_name):  # переопределяем метод базового класса
+        super().__init__(channel_id, video_name, view_count, like_count)
+        self.video_id = video_id
+        self.playlist_id = playlist_id
+        self.playlist_name = playlist_name
 
-print(y.subscriber_count < t.subscriber_count)
-
+video1 = Video('9lO06Zxhu88')
+video2 = PLVideo('BBotskuyw_M', 'PL7Ntiz7eTKwrqmApjln9u4ItzhDLRtPuD')
+print(video1)

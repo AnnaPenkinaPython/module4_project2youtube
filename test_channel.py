@@ -1,4 +1,4 @@
-from main import Youtube
+from main import Youtube, Video, PLVideo
 import pytest
 
 
@@ -17,4 +17,5 @@ def test_lt():
     channel_id = Youtube("UCByhZ-JEe5OOZSuq0uaXOng")
     other_id = Youtube("UCMCgOm8GZkHp8zJ6l7_hIuA")
     assert (channel_id.subscriber_count > other_id.subscriber_count) is True
+
 

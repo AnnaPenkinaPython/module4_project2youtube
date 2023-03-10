@@ -41,21 +41,18 @@ class Youtube:
         return self.subscriber_count > other.subscriber_count
 
 
-class Video(Youtube):
-    def __init__(self, channel_id, video_name, view_count, like_count):  # переопределяем метод базового класса
-        super().__init__(channel_id)
+class Video:
+    def __init__(self, video_id, video_name="Default"):
+        self.video_id = video_id
         self.video_name = video_name
-        self.view_count = view_count
-        self.like_count = like_count
 
 
 class PLVideo(Video):
-    def __init__(self, channel_id, video_name, view_count, like_count, video_id,
-                 playlist_id, playlist_name):  # переопределяем метод базового класса
-        super().__init__(channel_id, video_name, view_count, like_count)
+    def __init__(self, video_id, playlist_id):  # переопределяем метод базового класса
+        super().__init__(video_id)
         self.video_id = video_id
         self.playlist_id = playlist_id
-        self.playlist_name = playlist_name
+
 
 video1 = Video('9lO06Zxhu88')
 video2 = PLVideo('BBotskuyw_M', 'PL7Ntiz7eTKwrqmApjln9u4ItzhDLRtPuD')

@@ -3,6 +3,7 @@ from googleapiclient.discovery import build
 import json
 
 from dotenv import load_dotenv
+load_dotenv()
 
 
 class Youtube:
@@ -20,6 +21,11 @@ class Youtube:
         self.video_count = self.channel_info['items'][0]['statistics']['videoCount']
         self.view_count = self.channel_info['items'][0]['statistics']['viewCount']
         data = self.title + self.description + self.url + self.subscriber_count + self.video_count + self.view_count
+
+    @classmethod
+    def get_service(cls):
+        service = build
+        return service
 
     def json_file(self, data, filename='channel.json'):
         """добавляет инфу о канале,хранящуюся в атрибутах, в json file"""
@@ -43,15 +49,41 @@ class Youtube:
 
 class Video:
     def __init__(self, video_id, video_name="Default"):
-        self.video_id = video_id
+        self.__video_id = video_id
         self.video_name = video_name
+        load_dotenv()
+        api_key: str = os.environ.get('YOUTUBE_KEY')
+        youtube = build('youtube', 'v3', developerKey=api_key)
+        self._init_from_api()
+
+    @classmethod
+    def get_service(cls):
+        service = build('youtube', 'v3', developerKey=api_key)
+        return service
+
+    def _init_from_api(self):
+        video_response = self.get_service().videos().list(part='snippet,statistics',
+                                                          id=self.__video_id
+                                                          ).execute()
+        self.title = video_response['items'][0]['snippet']['title']
+        self.url = f'https://youtu.be/{self.__video_id}'
+        self.view_count = video_response['items'][0]['statistics']['viewCount']
+        self.like_count = video_response['items'][0]['statistics']['likeCount']
+
 
 
 class PLVideo(Video):
     def __init__(self, video_id, playlist_id):  # переопределяем метод базового класса
         super().__init__(video_id)
-        self.video_id = video_id
-        self.playlist_id = playlist_id
+        self.playlist = self.get_service().playlists().list(id=playlist_id, part='snippet').execute()
+        self.playlist_name = self.playlist['items'][0]['snippet']['title']
+
+    def get_video_in_playlist(cls, video_id: str, playlist_id: str) -> dict:
+        """Получает данные о видео в плейлисте"""
+        video_in_playlist = cls.get_service().playlistItems().list(videoId=video_id,
+                                                                   playlistId=playlist_id,
+                                                                   part='snippet').execute()
+        return video_in_playlist
 
 
 video1 = Video('9lO06Zxhu88')

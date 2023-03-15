@@ -48,17 +48,18 @@ class Youtube:
 
 
 class Video:
+    load_dotenv()
+    api_key: str = os.environ.get('YOUTUBE_KEY')
     def __init__(self, video_id, video_name="Default"):
         self.__video_id = video_id
         self.video_name = video_name
-        load_dotenv()
-        api_key: str = os.environ.get('YOUTUBE_KEY')
-        youtube = build('youtube', 'v3', developerKey=api_key)
+
+        youtube = build('youtube', 'v3', developerKey=Video.api_key)
         self._init_from_api()
 
     @classmethod
     def get_service(cls):
-        service = build('youtube', 'v3', developerKey=api_key)
+        service = build('youtube', 'v3', developerKey=Video.api_key)
         return service
 
     def _init_from_api(self):

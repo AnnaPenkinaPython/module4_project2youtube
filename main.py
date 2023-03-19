@@ -1,8 +1,13 @@
 import os
 from googleapiclient.discovery import build
 import json
+from datetime import datetime
+import isodate as isodate
+
+import datetime
 
 from dotenv import load_dotenv
+
 load_dotenv()
 
 
@@ -50,6 +55,7 @@ class Youtube:
 class Video:
     load_dotenv()
     api_key: str = os.environ.get('YOUTUBE_KEY')
+
     def __init__(self, video_id, video_name="Default"):
         self.__video_id = video_id
         self.video_name = video_name
@@ -72,7 +78,6 @@ class Video:
         self.like_count = video_response['items'][0]['statistics']['likeCount']
 
 
-
 class PLVideo(Video):
     def __init__(self, video_id, playlist_id):  # переопределяем метод базового класса
         super().__init__(video_id)
@@ -85,6 +90,32 @@ class PLVideo(Video):
                                                                    playlistId=playlist_id,
                                                                    part='snippet').execute()
         return video_in_playlist
+
+
+class PlayList:
+
+    def __init__(self, playlist_id):
+        self.playlist_id = playlist_id
+        api_key: str = os.getenv('api_key')
+        youtube = build('youtube', 'v3', developerKey=api_key)
+        self.playlist = youtube.playlists().list(id=playlist_id, part='snippet').execute()
+        self.playlist_videos = youtube.playlistItems().list(playlistId=playlist_id, part='contentDetails',
+                                                            maxResults=50).execute()
+        self.title = self.playlist['items'][0]['snippet']['title']
+
+    @property
+    def total_duration(self):
+        api_key: str = os.getenv('api_key')
+        youtube = build('youtube', 'v3', developerKey=api_key)
+        video_ids: list[str] = [video['contentDetails']['videoId'] for video in self.playlist_videos['items']]
+        response = youtube.videos().list(part='contentDetails,statistics', id=','.join(video_ids)).execute()
+
+        total_duration = datetime.timedelta()
+        for video in response['items']:
+            iso_8601_duration = video['contentDetails']['duration']
+            duration = isodate.parse_duration(iso_8601_duration)
+            total_duration += duration
+        return total_duration
 
 
 video1 = Video('9lO06Zxhu88')

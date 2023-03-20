@@ -95,19 +95,19 @@ class PLVideo(Video):
 class PlayList:
 
     def __init__(self, playlist_id):
-        self.playlist_id = playlist_id
+        self.__playlist_id = playlist_id
         api_key: str = os.getenv('api_key')
         youtube = build('youtube', 'v3', developerKey=api_key)
-        self.playlist = youtube.playlists().list(id=playlist_id, part='snippet').execute()
-        self.playlist_videos = youtube.playlistItems().list(playlistId=playlist_id, part='contentDetails',
+        self.__playlist = youtube.playlists().list(id=playlist_id, part='snippet').execute()
+        self.__playlist_videos = youtube.playlistItems().list(playlistId=playlist_id, part='contentDetails',
                                                             maxResults=50).execute()
-        self.title = self.playlist['items'][0]['snippet']['title']
+        self.title = self.__playlist['items'][0]['snippet']['title']
 
     @property
     def total_duration(self):
         api_key: str = os.getenv('api_key')
         youtube = build('youtube', 'v3', developerKey=api_key)
-        video_ids: list[str] = [video['contentDetails']['videoId'] for video in self.playlist_videos['items']]
+        video_ids: list[str] = [video['contentDetails']['videoId'] for video in self.__playlist_videos['items']]
         response = youtube.videos().list(part='contentDetails,statistics', id=','.join(video_ids)).execute()
 
         total_duration = datetime.timedelta()
@@ -116,6 +116,17 @@ class PlayList:
             duration = isodate.parse_duration(iso_8601_duration)
             total_duration += duration
         return total_duration
+
+    def show_best_video(self):
+        videos = {}
+        likes = []
+
+        for i in range(len(self.__playlist_videos)):
+            videos[self.response['items'][i]['statistics']['likeCount']] = self.__playlist_videos[i]
+            likes.append(self.response['items'][i]['statistics']['likeCount'])
+
+        return likes, max(likes), max(videos)
+
 
 
 video1 = Video('9lO06Zxhu88')

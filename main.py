@@ -62,6 +62,17 @@ class Video:
 
         youtube = build('youtube', 'v3', developerKey=Video.api_key)
         self._init_from_api()
+        try:
+            youtube = self.get_service()
+            self.video_response = youtube.videos().list(part='snippet,statistics', id=video_id).execute()
+            self.title = self.video_response['items'][0]['snippet']['title']
+            self.view_count = self.video_response['items'][0]['statistics']['viewCount']
+            self.like_count = self.video_response['items'][0]['statistics']['likeCount']
+        except Exception:
+            self.video_response = None
+            self.title = None
+            self.view_count = None
+            self.like_count = None
 
     @classmethod
     def get_service(cls):
@@ -100,7 +111,7 @@ class PlayList:
         youtube = build('youtube', 'v3', developerKey=api_key)
         self.__playlist = youtube.playlists().list(id=playlist_id, part='snippet').execute()
         self.__playlist_videos = youtube.playlistItems().list(playlistId=playlist_id, part='contentDetails',
-                                                            maxResults=50).execute()
+                                                              maxResults=50).execute()
         self.title = self.__playlist['items'][0]['snippet']['title']
 
     @property
@@ -126,7 +137,6 @@ class PlayList:
             likes.append(self.response['items'][i]['statistics']['likeCount'])
 
         return likes, max(likes), max(videos)
-
 
 
 video1 = Video('9lO06Zxhu88')

@@ -68,7 +68,7 @@ class Video:
             self.title = self.video_response['items'][0]['snippet']['title']
             self.view_count = self.video_response['items'][0]['statistics']['viewCount']
             self.like_count = self.video_response['items'][0]['statistics']['likeCount']
-        except Exception:
+        except IndexError:
             self.video_response = None
             self.title = None
             self.view_count = None
